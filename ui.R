@@ -17,10 +17,9 @@ fluidPage(
                   owed is calculated by summing up the taxes 
                   due from each income bracket."
                 )),
-                p("Current USA income tax brackets are used by default.
-                  USA median income is highlighted in red.
-                  USA 95th percentile income is the default graph range.
-                  Feel free to edit any fields to match your situation."),
+                p("Historical USA income tax brackets are shown by default.
+                  Choose a year and filing type of interest, or switch to
+                  custom mode and edit the fields to match your situation."),
                 p(HTML("<b>The graph is interactive!</b> 
                   Hover over the line to see more,
                   including the effective, 
@@ -28,47 +27,44 @@ fluidPage(
             )
         )
     ),
-
-    fluidRow(
-        column(2,
-            wellPanel(
+    
+    sidebarLayout(
+        sidebarPanel(
+            width = 3,
+            radioButtons(
+                "spec", "Specification Mode",
+                c("USA Brackets", "Custom"), "USA Brackets"
+            ),
+            conditionalPanel(
+                condition = "input.spec == 'Custom'",
                 numericInput(
                     "n_brackets", "Number of tax brackets",
                     min = 1, value = 7
-                )
+                ),
+                uiOutput('custom_brackets')
+            ),
+            conditionalPanel(
+                condition = "input.spec != 'Custom'",
+                selectInput("years", "Tax Year", choices="2021", selected="2021"),
+                selectInput("file_type", "Filing As", choices="Head of Household")
             )
         ),
-        column(2,
+        
+        mainPanel(
+            width = 9,
             wellPanel(
-                numericInput(
-                    "highlight_income", "Income to highlight in red",
-                    value = 63179
-                )
+                fluidRow(
+                    column(3, numericInput(
+                        "highlight_income", "Specific Income to Highlight",
+                        value = "50000"
+                    )),
+                    column(9, sliderInput(
+                        "income_range", "Visible Income Range",
+                        min = 0, max = 1e6, value = c(0, 250000), step = 500
+                    ))
+                ),
+                plotlyOutput(outputId = "taxPlot")
             )
-        ),
-        column(8,
-            wellPanel(
-                sliderInput(
-                    "income_range", "Visible income range",
-                    min = 0, max = 1e6, value = c(0, 248728)
-                )
-            )
-        )
-    ),
-
-    fluidRow(
-        column(2,
-            wellPanel(
-                uiOutput("bracket_incomes")
-            )
-        ),
-        column(2,
-            wellPanel(
-                uiOutput("bracket_rates")
-            )
-        ),
-        column(8,
-            plotlyOutput(outputId = "taxPlot")
         )
     )
 )

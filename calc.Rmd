@@ -1,0 +1,39 @@
+---
+title: "Tax Calc Notebook"
+output: html_notebook
+---
+
+```{r}
+default_incomes <- c(0, 10000, 40000, 90000, 170000, 215000, 539000)
+default_rates <- c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)
+```
+
+```{r}
+x = seq(1e3, 1e5, 1e3)
+inc = default_incomes
+rates = default_rates
+y = (x > 40000) * (pmin(x, 90000) - 40000)
+plot(x, y)
+```
+
+
+```{r}
+effect_tax <- function(x, brackets, rates) {
+    bkts <- c(brackets, Inf)
+    tax <- rep(0, length(x))
+    for (i in 2:length(bkts)) {
+        in_bkt <- x > bkts[i-1]
+        amt <- (pmin(x, bkts[i]) - bkts[i-1])
+        additional <- in_bkt * amt
+        tax <- tax + additional*rates[i-1]
+    }
+    round(tax)
+}
+x = seq(1e3, 1e5, 1e3)
+inc = default_incomes
+rates = default_rates
+plot(x, effect_tax(x, inc, rates))
+```
+
+
+
