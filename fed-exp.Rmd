@@ -1,0 +1,68 @@
+---
+title: "Fed Notebook"
+output: html_notebook
+---
+
+```{r}
+fed_file <- "Historical-Federal-Individual-Income-Tax-Rates-and-Brackets.rv_.xlsx"
+fedxl <- readxl::read_excel(fed_file, skip=3)[1:2428,]
+str(fedxl)
+```
+
+```{r}
+names(fedxl)
+```
+
+```{r}
+fed <- fedxl[rowSums(is.na(fedxl)) != ncol(fedxl),]
+str(fed)
+```
+
+```{r}
+# extracts a single filing type from partitioned excel format
+get_subdf <- function(ind) {
+    subdf <- fed[,c(1, ind, ind + 2)]
+    # drop rows where all values are NA
+    subdf.red <- subdf[rowSums(is.na(subdf)) != ncol(subdf),]
+    # append filing type column
+    subdf.type <- cbind(subdf.red[-1,], names(fed)[ind])
+    names(subdf.type) <- c(subdf.red[1,], "Type")
+    subdf.type
+}
+
+rate_inds <- which(fed[1,] == 'Rates')
+
+tidy.df <- do.call(rbind, lapply(rate_inds, get_subdf))
+tidy.filled <- tidyr::fill(tidy.df, Year)
+rates.df <- data.frame(
+    Year = as.integer(gsub('(A)', '', tidy.filled$Year, fixed=T)),
+    Rate = as.numeric(tidy.filled$Rates),
+    Bracket = as.integer(tidy.filled$Brackets),
+    Type = tidy.filled$Type
+)
+colSums(is.na(rates.df))
+```
+
+```{r}
+summary(rates.df)
+```
+
+```{r}
+plot(table(rates.df$Year))
+```
+
+```{r}
+table(rates.df$Type)
+```
+
+
+```{r}
+plot(log(Bracket) ~ Rate, data=rates.df, col=Year)
+```
+
+```{r}
+write.csv(rates.df, "US-Fed-Rates.csv", row.names=F)
+```
+
+
+
