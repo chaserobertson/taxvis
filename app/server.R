@@ -3,7 +3,7 @@ library(plotly)
 library(scales)
 library(dplyr)
 
-us.fed.rates <- read.csv("US-Fed-Rates.csv")
+us.fed.rates <- read.csv("data/US-Fed-Rates.csv")
 
 default_incomes <- c(0, 10275, 41775, 89075, 170050, 215950, 539900)
 default_rates <- c(0.1, 0.12, 0.22, 0.24, 0.32, 0.35, 0.37)

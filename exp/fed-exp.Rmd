@@ -4,7 +4,7 @@ output: html_notebook
 ---
 
 ```{r}
-fed_file <- "Historical-Federal-Individual-Income-Tax-Rates-and-Brackets.rv_.xlsx"
+fed_file <- "data/Historical-Federal-Individual-Income-Tax-Rates-and-Brackets.rv_.xlsx"
 fedxl <- readxl::read_excel(fed_file, skip=3)[1:2428,]
 str(fedxl)
 ```
@@ -55,7 +55,6 @@ plot(table(rates.df$Year))
 table(rates.df$Type)
 ```
 
-
 ```{r}
 plot(log(Bracket) ~ Rate, data=rates.df, col=Year)
 ```
@@ -63,6 +62,3 @@ plot(log(Bracket) ~ Rate, data=rates.df, col=Year)
 ```{r}
 write.csv(rates.df, "US-Fed-Rates.csv", row.names=F)
 ```
-
-
-

@@ -16,7 +16,6 @@ y = (x > 40000) * (pmin(x, 90000) - 40000)
 plot(x, y)
 ```
 
-
 ```{r}
 effect_tax <- function(x, brackets, rates) {
     bkts <- c(brackets, Inf)
@@ -34,6 +33,3 @@ inc = default_incomes
 rates = default_rates
 plot(x, effect_tax(x, inc, rates))
 ```
-
-
-
